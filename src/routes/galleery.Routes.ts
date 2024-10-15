@@ -1,10 +1,17 @@
-import {Router} from "express"
-import { AuthenticateUser } from "../middlewares/authMiddleware";
-import { uploadImage } from "../controllers/gallery.controller";
-
+import { Router } from "express";
+import { authenticateUser } from "../middlewares/authMiddleware";
+import { upload } from "../middlewares/multerConfig";
+import { getImagesByUserId, uploadImage } from "../controllers/gallery.controller";
 
 const galleryRouter = Router();
 
-galleryRouter.post("/uploadImages", uploadImage )
+galleryRouter.post(
+    "/uploadImages",
+    authenticateUser,
+    upload.fields([{ name: "images", maxCount: 20 }]),
+    uploadImage
+);
 
-export default galleryRouter
+galleryRouter.get("/", authenticateUser, getImagesByUserId);
+
+export default galleryRouter;

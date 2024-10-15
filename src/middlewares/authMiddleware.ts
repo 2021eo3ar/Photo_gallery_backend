@@ -1,33 +1,28 @@
-import { NextFunction, Request, Response } from "express";
+import { Request, Response, NextFunction } from "express";
 import { getUser } from "../config/jwt";
 
-interface CookieRequest extends Request {
-    cookiesreturn: { [key: string]: string | undefined }; // Define a more specific type for cookies
-    user?: any; // Optional user property
+interface AuthenticatedRequest extends Request {
+    user?: any; // Adjust the type to whatever `user` should be (e.g., `User`, `DecodedToken`, etc.)
 }
 
-export const AuthenticateUser = async (req: CookieRequest, res: Response, next: NextFunction) : Promise<void> => {
+export const authenticateUser = (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
     try {
-        const token = req.cookies.token;
-
-        // Check if the token exists
-        if (!token) {
-           res.status(401).json({ message: "Unauthorized User" });
+        const getToken: any = req.cookies.token;
+        console.log("getToken", getToken);
+        if (!getToken) {
+            res.status(400).send({ message: "Token not found" });
+            return;
         }
-
-        // Validate the token and get the user
-        const user = await getUser(token);
-        
-        // Check if the user is valid
+        const user: any = getUser(getToken);
         if (!user) {
-             res.status(401).json({ message: "Invalid user" });
+            res.status(400).send({ message: "User not Found" });
+            return;
         }
-
-        // Attach the user to the request object
+        console.log("user", user);
         req.user = user;
         next();
-    } catch (error: any) {
-        console.error("Authentication error:", error); // Log the error for debugging
-         res.status(500).json({ message: "Internal Server Error" });
+    } catch (err: any) {
+        res.status(400).send({ message: err.message });
+        return;
     }
 };

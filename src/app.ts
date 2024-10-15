@@ -23,7 +23,7 @@ app.get("/", (req: Request, res: Response) => {
 });
 
 app.use("/api/user", router)
-app.use("/api/user", galleryRouter)
+app.use("/api/gallery", galleryRouter)
 
 
 
