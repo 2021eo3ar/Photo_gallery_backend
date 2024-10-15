@@ -1,0 +1,1 @@
+ALTER TABLE "gallerys" ALTER COLUMN "imageUrl" SET DATA TYPE varchar;
